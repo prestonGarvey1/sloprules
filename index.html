@@ -18,19 +18,14 @@
             min-height: 100vh;
         }
 
-        .imgur-container {
-            margin-bottom: 20px; /* Space between image and menu */
+        .logo-container {
+            margin-bottom: 20px; /* Space between logo and menu */
         }
 
-        .imgur-link {
-            /* You can add styling for the link if needed */
-        }
-
-        .imgur-image {
-            max-width: 100%; /* Make image responsive */
-            height: auto;
-            border-radius: 8px; /* Optional: round image corners */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: add a shadow */
+        .game-logo {
+            width: 100px; /* Adjust width for your logo size */
+            height: auto; /* Maintain aspect ratio */
+            display: block; /* Prevent inline spacing issues */
         }
 
         .rules-container {
@@ -107,11 +102,8 @@
     </style>
 </head>
 <body>
-    <div class="imgur-container">
-        <a href="https://i.imgur.com/uqdK14o.png" class="imgur-link" target="_blank">
-            <img src="https://i.imgur.com/uqdK14o.png" alt="Game Logo" class="imgur-image">
-        </a>
-        <p style="text-align: center; font-size: 0.8em; margin-top: 5px;">(Click image to view full size)</p>
+    <div class="logo-container">
+        <img src="https://i.imgur.com/uqdK14o.png" alt="Game Logo" class="game-logo">
     </div>
 
     <div class="rules-container">
