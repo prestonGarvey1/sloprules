@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>SlopRP Loading Screen</title>	
+	</head>
+	<body>
+		<div class="wrap">
+			<div class="panel" role="main">
+				<div class="header">
+					<div class="titleBlock">
+						<h1 class="title" id="title">SlopRP</h1>
+						<div class="subtitle" id="subtitle">Connecting to server...</div>
+					</div>
+					<div style="text-align:right;min-width:110px">
+						<div style="font-size:12px;color:var(--muted)" id="mapName">Map: -</div>
+						<div style="font-size:13px;font-weight:600" id="percent">0%</div>
+					</div>
+				</div>
+				<div class="progressWrap">
+					<div class="progressBar" aria-hidden="true">
+						<div class="progressFill" id="progressFill">0%</div>
+						<div class="progressStripe" aria-hidden="true"></div>
+					</div>
+					<div class="meta">
+						<div id="filesInfo">Files: 0 / 0</div>
+						<div id="statusShort">Waiting...</div>
+					</div>
+				</div>
+				<div class="status" id="status">Initializing loader.</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// Handles actual loading function
+
+			(function(){
+				const progressFill = document.getElementById('progressFill');
+				const percent = document.getElementById('percent');
+				const status = document.getElementById('status');
+				const statusShort = document.getElementById('statusShort');
+				const filesInfo = document.getElementById('filesInfo');
+				const mapName = document.getElementById('mapName');
+				const titleEl = document.getElementById('title');
+				const subtitleEl = document.getElementById('subtitle');
+
+				let state = {progress:0, statusText:'Waiting...', files:{cur:0,total:0}, map:'-', title:'SlopRP'};
+
+				// Visible progress animates smoothly towards targetProgress
+				let visibleProgress = 0; // displayed percent 0..100
+				let targetProgress = 0; // desired percent 0..100
+				let animHandle = null;
+
+				function step(){
+					const diff = targetProgress - visibleProgress;
+					if(Math.abs(diff) < 0.1){
+						visibleProgress = targetProgress;
+					} else {
+						visibleProgress += diff * 0.18;
+					}
+					progressFill.style.width = visibleProgress.toFixed(1) + '%';
+					progressFill.textContent = Math.round(visibleProgress) + '%';
+					percent.textContent = Math.round(visibleProgress) + '%';
+					if(Math.abs(targetProgress - visibleProgress) > 0.05){
+						animHandle = requestAnimationFrame(step);
+					} else {
+						if(animHandle) cancelAnimationFrame(animHandle);
+						animHandle = null;
+					}
+				}
+
+				function setTarget(p){
+					const n = Number(p) || 0;
+					targetProgress = Math.max(0, Math.min(100, n));
+					if(!animHandle) animHandle = requestAnimationFrame(step);
+				}
+
+				// Public API
+				window.SetProgress = function(val){
+					// Accept 0..1 or 0..100
+					let n = Number(val) || 0;
+					if(n <= 1) n = n * 100;
+					state.progress = Math.max(0,Math.min(100,n));
+					setTarget(state.progress);
+				};
+
+				window.SetStatus = function(text){
+					text = String(text || '');
+					state.statusText = text;
+					status.textContent = text;
+					statusShort.textContent = text.length>40?text.slice(0,37)+'...':text;
+				};
+
+				window.SetFiles = function(cur, total){
+					cur = Number(cur)||0; total = Number(total)||0;
+					state.files.cur = cur; state.files.total = total;
+					filesInfo.textContent = `Files: ${cur} / ${total}`;
+				};
+
+				window.SetMap = function(name){
+					name = String(name||'-'); state.map = name; mapName.textContent = 'Map: ' + name;
+				};
+
+				window.SetTitle = function(t){ titleEl.textContent = String(t||'SlopRP'); };
+
+				// Progression helper
+				window.Progressing = function(cur, total, text){
+					if(total>0) SetProgress((cur/total)*100);
+					SetFiles(cur,total);
+					if(text) SetStatus(text);
+				};
+
+				// Default UI (before Gmod overrides the page)
+				SetProgress(0);
+				SetStatus('Waiting for client...');
+				SetFiles(0,0);
+                SetMap('-');
+			})();
+		</script>
+	</body>
+</html>
+
